@@ -6,11 +6,13 @@ import com.yunhwan.board.dto.PageResultDTO;
 import com.yunhwan.board.entity.Board;
 import com.yunhwan.board.entity.Member;
 import com.yunhwan.board.repository.BoardRepository;
+import com.yunhwan.board.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Function;
 
@@ -18,7 +20,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardServiceImpl implements BoardService{
+
     private final BoardRepository repository;
+
+    private final ReplyRepository replyRepository;
 
     @Override
     public Long register(BoardDTO dto) {
@@ -57,5 +62,25 @@ public class BoardServiceImpl implements BoardService{
 
         // DB 조회해온 것을 fn 으로 실행해서 PageResultDTO 값을 채워 반환.
         return new PageResultDTO<>(result, fn);
+    }
+
+    @Transactional
+    @Override
+    public void modify(BoardDTO boardDTO) {
+
+        Board board = repository.getOne(boardDTO.getBno());
+            board.changeTitle(boardDTO.getTitle());
+            board.changeContent(boardDTO.getContent());
+
+            repository.save(board); // 변경 감지로 save하지 않아도 update 쿼리 날라감.
+
+    }
+
+    @Override
+    @Transactional
+    public void removeWithReplies(Long bno) {
+        replyRepository.deleteByBno(bno);
+
+        repository.deleteById(bno);
     }
 }

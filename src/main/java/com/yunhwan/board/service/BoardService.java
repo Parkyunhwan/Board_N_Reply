@@ -14,6 +14,9 @@ public interface BoardService {
 
     PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO);
 
+    void modify(BoardDTO boardDTO);
+
+    void removeWithReplies(Long bno);
 
     // 추상 클래스 없이 공통 메서드를 생성함
     default Board dtoToEntity(BoardDTO dto){

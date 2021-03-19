@@ -47,4 +47,18 @@ public class BoardServiceTest {
         BoardDTO boardDTO = boardService.get(bno);
         System.out.println(boardDTO);
     }
+
+    @Test
+    public void testRemove() {
+        Long bno = 1L;
+        boardService.removeWithReplies(bno);
+    }
+
+    @Test
+    public void testModify() {
+        BoardDTO boardDTO = boardService.get(2L);
+        boardDTO.setContent("MOD CONTENT");
+        boardDTO.setTitle("SET TITLE");
+        boardService.modify(boardDTO);
+    }
 }

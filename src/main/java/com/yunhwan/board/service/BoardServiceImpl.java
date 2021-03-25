@@ -48,12 +48,18 @@ public class BoardServiceImpl implements BoardService{
         return entityToDTO((Board)arr[0], (Member)arr[1], (Long)arr[2]);
     }
 
+    /**
+     * 보드 목록을 가져오는 메서드
+     * @param pageRequestDTO
+     * @return PageRequestDTO
+     */
     @Override
     public PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO
                                                              pageRequestDTO) {
         log.info(pageRequestDTO);
 
         // 사용할 Function 정의 fn
+        // f(인자값, 반환값)
         Function<Object[], BoardDTO> fn = (en ->
                 entityToDTO((Board)en[0],(Member)en[1],(Long)en[2]));
 

@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+
+// 해당 클래스를 사용하면 DTO와 Entity만 교체해서 모든 객체에 사용할 수 있다.
 @Data
 public class PageResultDTO<DTO, EN> {
 
@@ -32,6 +34,7 @@ public class PageResultDTO<DTO, EN> {
     //페이지 번호  목록
     private List<Integer> pageList;
 
+    // 생성자..
     public PageResultDTO(Page<EN> result, Function<EN,DTO> fn ){
 
         dtoList = result.stream().map(fn).collect(Collectors.toList());

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -47,5 +48,16 @@ public class ReplyRepositoryTest {
         //then
         System.out.println(reply);
         System.out.println(reply.getBoard());
+    }
+
+    @Test
+    public void 게시물로_모든_댓글_가져오기() throws Exception {
+        //given
+        Board board = Board.builder().bno(90L).build();
+        System.out.println(board);
+        //when
+        List<Reply> replyList = replyRepository.getRepliesByBoardOrderByRno(board);
+        //then
+        replyList.forEach(reply -> System.out.println(reply));
     }
 }

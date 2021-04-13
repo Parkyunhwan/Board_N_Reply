@@ -36,5 +36,217 @@
         <a th:href="@{/board/list(page=${requestDTO.page} , type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
             <button type="button" class="btn btn-info">List</button>
         </a>
+
+        <!-- 댓글 버       -->
+        <div>
+            <div class="mt-4">
+                <h5>
+                    <span class="badge badge-info addReply">Add Reply</span>
+                </h5>
+                <h5>
+                    <span class="badge badge-secondary replyCount"> Reply Count [[${dto.replyCount}]]</span>
+                </h5>
+            </div>
+            <div>
+                <div class="list-group replyList"></div>
+            </div>
+        </div>
+
+
+        <!-- 모달       -->
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 댓글에 입력할 내용들                         -->
+                        <div class="form-group">
+                            <input class="form-control"  type="text" name="replyText" placeholder="Reply Text...">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control"  type="text" name="replyer" placeholder="Replyer">
+                            <input type="hidden" name="rno" >
+                        </div>
+                    </div>
+
+                    <!-- 버튼 템플릿                   -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger replyRemove">Remove</button>
+                        <button type="button" class="btn btn-warning replyModify">Modify</button>
+                        <button type="button" class="btn btn-primary replySave">Save</button>
+                        <button type="button" class="btn btn-outline-secondary replyClose" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script th:inline="javascript">
+            $(document).ready(function() {
+
+                var bno = [[${dto.bno}]];
+
+                var listGroup = $(".replyList");
+
+                $(".replyCount").click(function () {
+
+                    loadJSONData();
+
+                })//end click
+
+                //var listGroup = $(".replyList")
+
+                function formatTime(str) {
+                    var date = new Date(str);
+
+                    return date.getFullYear() + '/' +
+                        (date.getMonth() + 1) + '/' +
+                        date.getDate() + ' ' +
+                        date.getHours() + ':' +
+                        date.getMinutes();
+                }
+
+                // 게시판에 댓글 출력하
+                function loadJSONData() {
+                    $.getJSON('/replies/board/' + bno, function(arr) {
+                        console.log(arr); // json 형태의 값...
+
+                        var str = "";
+
+                        $('.replyCount').html(" Reply Count " + arr.length); // 길이 출력 (삭제 나 수정 시 재로드)
+
+                        // json 형태의 반환값을 idx와 reply 반환값으로 나눠서 함수 인자로 넘김
+                        // 각각의 정보를 출력!
+                        $.each(arr, function(idx, reply){
+                            console.log(reply);
+                            str += '    <div class="card-body" data-rno="'+reply.rno+'"><b>'+reply.rno +'</b>';
+                            str += '    <h5 class="card-title">'+reply.text+'</h5>';
+                            str += '    <h6 class="card-subtitle mb-2 text-muted">'+reply.replyer+'</h6>';
+                            str += '    <p class="card-text">'+ formatTime(reply.regDate) +'</p>';
+                            str += '    </div>';
+                        })
+
+                        // replyList 부분에 str 내용을 출력
+                       listGroup.html(str);
+                    })
+                }
+
+                var modal = $('.modal');
+
+                $(".addReply").click(function () {
+                    modal.modal('show');
+
+                    // 초기화
+                    $('input[name="replyText"]').val('');
+                    $('input[name="replyer"]').val('');
+
+                    $(".modal-footer .btn").hide(); // 모달 내의 모든 버튼을 안 보이도록 만듬
+                    $(".replySave, .replyClose").show(); // 모두 안보이게 만들었으니 필요한 save, close만 보이게 만듬
+
+                });
+
+                $(".replySave").click(function () {
+                    // 키: 값 설정 시 띄어쓰기 안하는 거 주의하
+                    var reply = {
+                        bno: bno,
+                        text: $('input[name="replyText"]').val(),
+                        replyer: $('input[name="replyer"]').val()
+                    }
+                    console.log(reply);
+
+                    $.ajax({
+                        url: '/replies/',
+                        method: 'post',
+                        data: JSON.stringify(reply),
+                        contentType: 'application/json; charset=utf-8',
+                        data_type: 'json',
+                        success: function(dta){ // post 성공 후 수행
+                            console.log(data);
+
+                            var newRno = parseInt(data);
+
+                            alert(newRno + "번 댓글이 등록되었습니다.");
+                            modal.modal('hide');
+                            loadJSONData();
+                        }
+                    })
+                });
+
+                // 댓글의 리스트에서 card-body(댓글의 번호)가 눌리면 모달창에 해당 댓글의 정보를 넣어 보여
+                $('.replyList').on("click", ".card-body", function () {
+                    var rno = $(this).data("rno"); // 현재 card의 댓글 번호 가져옴
+
+                    // 각각의 댓글에 들어있는 값들을 모달에 넣어준다. (수정할 수 있도록)
+                    $("input[name='replyText']").val($(this).find('.card-title').html());
+                    $("input[name='replyer']").val($(this).find('.card-subtitle').html());
+                    $("input[name='rno']").val(rno);
+
+                    $(".modal-footer .btn").hide();
+                    $(".replyRemove, .replyModify, .replyClose").show(); // 보여줄 버튼
+
+                    modal.modal('show');
+                });
+
+                $(".replyRemove").on("click", function () {
+
+                    var rno = $("input[name='rno']").val();
+
+                    $.ajax({
+                        url: '/replies/' + rno,
+                        method: 'delete',
+
+                        success: function (result) {
+                            console.log("result: " + result);
+                            if (result == 'success') {
+                                alert("댓글이 삭제되었습니다.");
+                                modal.modal('hide');
+                                loadJSONData();
+                            }
+                        }
+                    })
+                });
+
+                $(".replyModify").on("click", function () {
+
+                    var rno = $("input[name='rno']").val();
+
+                    var reply = {
+                        rno: rno,
+                        bno: bno,
+                        text: $('input[name="replyer"]').val(),
+                        replyer: $('input[name="replyText"]').val()
+                    }
+
+                    console.log(reply);
+                    $.ajax({
+                        url: '/replies/' + rno,
+                        method: 'put',
+
+                        data: JSON.stringify(reply),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (result) {
+                            console.log("After Modify result: " + result);
+                            if (result == 'success') {
+                                alert("댓글이 수정되었습니다.");
+                                modal.modal('hide');
+                                loadJSONData();
+                            }
+                        }
+                    })
+                });
+
+
+            })
+
+
+        </script>
+
     </th:block>
 </th:block>

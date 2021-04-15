@@ -21,7 +21,10 @@ public interface BoardService {
     // 추상 클래스 없이 공통 메서드를 생성함
     default Board dtoToEntity(BoardDTO dto){
         // 작성자의 이메일로 멤버 객체를 조회해옴..
-        Member member = Member.builder().email(dto.getWriterEmail()).build();
+        Member member = Member.builder()
+                .email(dto.getWriterEmail())
+                .name(dto.getWriterName())
+                .build();
 
         Board board = Board.builder()
                 .bno(dto.getBno())

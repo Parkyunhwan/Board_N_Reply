@@ -31,6 +31,8 @@ public class BoardServiceImpl implements BoardService{
 
         Board board = dtoToEntity(dto);
 
+        //System.out.println("DDD register" + board);
+
         repository.save(board);
 
         return board.getBno();
@@ -45,6 +47,8 @@ public class BoardServiceImpl implements BoardService{
     public BoardDTO get(Long bno) {
         Object result = repository.getBoardByBno(bno);
         Object[] arr = (Object[])result;
+
+        // 각각의 객체로 반환
         return entityToDTO((Board)arr[0], (Member)arr[1], (Long)arr[2]);
     }
 
@@ -64,8 +68,8 @@ public class BoardServiceImpl implements BoardService{
                 entityToDTO((Board)en[0],(Member)en[1],(Long)en[2]));
 
         // 검색 조건 없이 단순 목록 조회시
-//        Page<Object[]> result = repository.getBoardWithReplyCount(
-//                pageRequestDTO.getPageable(Sort.by("bno").descending())); // page, size, order 설정
+        //        Page<Object[]> result = repository.getBoardWithReplyCount(
+    //                     pageRequestDTO.getPageable(Sort.by("bno").descending())); // page, size, order 설정
 
         // 검색 조건이 추가된 조회
         Page<Object[]> result = repository.searchPage(

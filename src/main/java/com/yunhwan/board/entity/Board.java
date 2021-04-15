@@ -20,7 +20,7 @@ public class Board extends BaseEntity {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY) // jpa 연관관계를 지정해줘야만 한다. (ToString은 exclude 해줘야 계속해서 ToString실행되지 않는다.)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // jpa 연관관계를 지정해줘야만 한다. (ToString은 exclude 해줘야 계속해서 ToString실행되지 않는다.)
     private Member writer;
 
     public void changeTitle(String title){

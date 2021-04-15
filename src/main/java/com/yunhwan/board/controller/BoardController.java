@@ -33,6 +33,8 @@ public class BoardController {
     public void register(){
         log.info("regiser get...");
     }
+
+
     // dto 정보를 받아와서 등록 -> 후 목록으로 리다이렉트
     @PostMapping("/register")
     public String registerPost(BoardDTO dto, RedirectAttributes

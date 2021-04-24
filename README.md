@@ -17,5 +17,5 @@
 ### ⚡️ 댓글 등록 및 삭제
 <img width="1252" alt="스크린샷 2021-04-24 오후 5 45 53" src="https://user-images.githubusercontent.com/47476276/115953228-2bac0980-a525-11eb-9a41-c24b352ebec8.png">
 
-### 게시글 검색
+### ⚡️ 게시글 검색
 <img width="1548" alt="스크린샷 2021-04-24 오후 5 56 30" src="https://user-images.githubusercontent.com/47476276/115953439-72e6ca00-a526-11eb-8cfc-44f77bf2c11b.png">
